@@ -1,0 +1,39 @@
+### Create Nasabah (POST)
+POST http://localhost:8001/api/v1/nasabah
+Content-Type: application/json
+
+{
+  "NamaNasabah": "jinbe"
+}
+
+### Create Nasabah (POST)
+POST http://localhost:8001/api/v1/nasabah
+Content-Type: application/json
+
+{
+  "NamaNasabah": "jinny"
+}
+
+### Create Nasabah (POST)
+POST http://localhost:8001/api/v1/nasabah
+Content-Type: application/json
+
+{
+  "NamaNasabah": "yumia"
+}
+
+# Create Nasabah (POST)
+POST http://localhost:8001/api/v1/nasabah
+Content-Type: application/json
+
+{
+  "NamaNasabah": "ririn"
+}
+
+# Create Nasabah (POST)
+POST http://localhost:8001/api/v1/nasabah
+Content-Type: application/json
+
+{
+  "NamaNasabah": "ulin"
+}
