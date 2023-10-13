@@ -65,17 +65,37 @@ const createTransaksi = async (req, res, next) => {
 
 const getTransaksiList = async (req, res, next) => {
     try {
-        const transaksiList = await prisma.transaksi.findMany();
+        const transaksiList = await prisma.transaksi.findMany({
+            include: {
+                Akun_bank: {
+                    include: {
+                        Nasabah: true 
+                }
+            }
+        }});
+
+        const formattedTransaksiList = transaksiList.map(item => ({
+            TransaksiID: item.TransaksiID,
+            JenisTransaksi: item.JenisTransaksi,
+            Jumlah: item.Jumlah,
+            AkunID: item.AkunID,
+            Nasabah: {
+                NasabahID: item.Akun_bank.Nasabah.NasabahID,
+                NamaNasabah: item.Akun_bank.Nasabah.NamaNasabah,
+                Saldo: item.Akun_bank.Saldo
+            }
+        }));
 
         res.status(200).json({
             status: true,
             message: 'Transaksi di temukan',
-            data: transaksiList
+            data: formattedTransaksiList
         });
     } catch (error) {
         next(error);
     }
 };
+
 
 const getTransaksiDetail = async (req, res, next) => {
     try {
