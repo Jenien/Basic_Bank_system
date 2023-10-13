@@ -33,24 +33,24 @@ router.get('/', (req, res) => {
 });
 
 // Endpoint untuk Nasabah
-router.post('/nasabah', createNasabah); // Menambahkan Nasabah Baru
-router.get('/nasabah', getNasabahList); // Menampilkan Daftar Nasabah
-router.get('/nasabah/:id', getNasabah); // Menampilkan Detail Informasi Nasabah
-router.put('/nasabah/:id', updateNasabah); // Mengupdate Informasi Nasabah
-router.delete('/nasabah/:id', deleteNasabah); // Menghapus Nasabah
+router.post('/nasabah', createNasabah); 
+router.get('/nasabah', getNasabahList); 
+router.get('/nasabah/:id', getNasabah); 
+router.put('/nasabah/:id', updateNasabah); 
+router.delete('/nasabah/:id', deleteNasabah);
 
 // Endpoint untuk Akun Bank
-router.post('/akun', createAkunBank); // Menambahkan Akun Baru
-router.get('/akun', getAkunBankList); // Menampilkan Daftar Akun
-router.get('/akun/:id', getAkunBankDetail); // Menampilkan Detail Akun
-router.put('/akun/:id', updateAkunBank); // Mengupdate Informasi Akun
-router.delete('/akun/:id', deleteAkunBank); // Menghapus Akun
+router.post('/akun', createAkunBank);
+router.get('/akun', getAkunBankList); 
+router.get('/akun/:id', getAkunBankDetail); 
+router.put('/akun/:id', updateAkunBank); 
+router.delete('/akun/:id', deleteAkunBank); 
 
 // Endpoint untuk Transaksi
-router.post('/transaksi', createTransaksi); // Mengirimkan Uang
-router.get('/transaksi', getTransaksiList); // Menampilkan Daftar Transaksi
-router.get('/transaksi/:id', getTransaksiDetail); // Menampilkan Detail Transaksi
-router.put('/transaksi/:id', updateTransaksi); // Mengupdate Informasi Transaksi
-router.delete('/transaksi/:id', deleteTransaksi); // Menghapus Transaksi
+router.post('/transaksi', createTransaksi); 
+router.get('/transaksi', getTransaksiList); 
+router.get('/transaksi/:id', getTransaksiDetail); 
+router.put('/transaksi/:id', updateTransaksi); 
+router.delete('/transaksi/:id', deleteTransaksi); 
 
 module.exports = router;

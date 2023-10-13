@@ -1,6 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { getPagination } = require('../../helpers');
 
 const createNasabah = async (req, res, next) => {
     try {
@@ -22,20 +21,12 @@ const createNasabah = async (req, res, next) => {
 
 const getNasabahList = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const offset = (page - 1) * limit;
-        const nasabahList = await prisma.nasabah.findMany({
-            skip: offset,
-            take: limit,
-        });
-        const count = await prisma.nasabah.count();
-        const pagination = getPagination(req, count, page, limit);
+        const nasabahList = await prisma.nasabah.findMany();
 
         res.status(200).json({
             status: true,
             message: 'Nasabah list found',
-            data: nasabahList,
-            pagination
+            data: nasabahList
         });
     } catch (error) {
         next(error);
@@ -47,7 +38,7 @@ const getNasabah = async (req, res, next) => {
         const { id } = req.params;
         const nasabah = await prisma.nasabah.findUnique({
             where: {
-                NasabahID: parseInt(id)
+                NasabahID: parseInt(id),
             }
         });
 
@@ -68,6 +59,7 @@ const getNasabah = async (req, res, next) => {
         next(error);
     }
 };
+
 const updateNasabah = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -96,6 +88,22 @@ const deleteNasabah = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        // Pastikan tidak ada Akun Bank yang terkait dengan Nasabah , hapus akun bank dahulu
+        const akunBankTerhubung = await prisma.akun_bank.findFirst({
+            where: {
+                NasabahID: parseInt(id)
+            }
+        });
+
+        if (akunBankTerhubung) {
+            return res.status(400).json({
+                status: false,
+                message: 'Cannot delete Nasabah with linked Akun Bank',
+                data: null
+            });
+        }
+
+        // Hapus Nasabah
         await prisma.nasabah.delete({
             where: {
                 NasabahID: parseInt(id)
@@ -110,6 +118,7 @@ const deleteNasabah = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+
 };
 
 module.exports = { createNasabah, getNasabahList, getNasabah, updateNasabah, deleteNasabah };

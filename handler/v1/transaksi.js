@@ -4,6 +4,34 @@ const prisma = new PrismaClient();
 const createTransaksi = async (req, res, next) => {
     try {
         const { AkunID, JenisTransaksi, Jumlah } = req.body;
+
+        const akun = await prisma.akun_bank.findUnique({
+            where: {
+                AkunID
+            }
+        });
+
+        if (!akun) {
+            return res.status(404).json({
+                status: false,
+                message: 'Akun not found',
+                data: null
+            });
+        }
+
+        let newSaldo;
+
+        if (JenisTransaksi === 'withdraw') {
+            newSaldo = akun.Saldo - Jumlah;
+        } else if (JenisTransaksi === 'deposit') {
+            newSaldo = akun.Saldo + Jumlah;
+        } else {
+            return res.status(400).json({
+                status: false,
+                message: 'Invalid JenisTransaksi'
+            });
+        }
+
         const transaksi = await prisma.transaksi.create({
             data: {
                 JenisTransaksi,
@@ -13,6 +41,15 @@ const createTransaksi = async (req, res, next) => {
                         AkunID
                     }
                 }
+            }
+        });
+
+        await prisma.akun_bank.update({
+            where: {
+                AkunID
+            },
+            data: {
+                Saldo: newSaldo
             }
         });
 
@@ -28,20 +65,12 @@ const createTransaksi = async (req, res, next) => {
 
 const getTransaksiList = async (req, res, next) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const offset = (page - 1) * limit;
-        const transaksiList = await prisma.transaksi.findMany({
-            skip: offset,
-            take: limit,
-        });
-        const count = await prisma.transaksi.count();
-        const pagination = getPagination(req, count, page, limit);
+        const transaksiList = await prisma.transaksi.findMany();
 
         res.status(200).json({
             status: true,
             message: 'Transaksi list found',
-            data: transaksiList,
-            pagination
+            data: transaksiList
         });
     } catch (error) {
         next(error);
@@ -77,6 +106,7 @@ const getTransaksiDetail = async (req, res, next) => {
         next(error);
     }
 };
+
 const updateTransaksi = async (req, res, next) => {
     try {
         const { id } = req.params;

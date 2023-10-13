@@ -7,7 +7,6 @@ const endpointV1 = require('./routes/endpointV1');
 app.use(express.json());
 app.use('/api/v1', endpointV1);
 
-// 404 error handling
 app.use((req, res, next) => {
     res.status(404).json({
         status: false,
@@ -17,7 +16,6 @@ app.use((req, res, next) => {
     next(); 
 });
 
-// 500 error handling
 app.use((err, req, res, next) => {
     console.log(err);
     res.status(500).json({
