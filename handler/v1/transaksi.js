@@ -14,7 +14,7 @@ const createTransaksi = async (req, res, next) => {
         if (!akun) {
             return res.status(404).json({
                 status: false,
-                message: 'Akun not found',
+                message: 'Akun tidak di temukan',
                 data: null
             });
         }
@@ -55,7 +55,7 @@ const createTransaksi = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: 'Transaksi created successfully',
+            message: 'Transaksi sukses di bikin',
             data: transaksi
         });
     } catch (error) {
@@ -69,7 +69,7 @@ const getTransaksiList = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: 'Transaksi list found',
+            message: 'Transaksi di temukan',
             data: transaksiList
         });
     } catch (error) {
@@ -82,25 +82,41 @@ const getTransaksiDetail = async (req, res, next) => {
         const { id } = req.params;
         const transaksi = await prisma.transaksi.findUnique({
             where: {
-                TransaksiID: parseInt(id)
+                TransaksiID: parseInt(id),
             },
             include: {
-                Akun_bank: true
+                Akun_bank: {
+                    include: {
+                        Nasabah: true
+                    }
+                }
             }
         });
 
         if (!transaksi) {
             return res.status(404).json({
                 status: false,
-                message: 'Transaksi not found',
+                message: 'Transaksi tidak di temukan',
                 data: null
             });
         }
 
         res.status(200).json({
             status: true,
-            message: 'Transaksi detail found',
-            data: transaksi
+            message: 'Transaksi detail di temukan',
+            data: {
+                TransaksiID: transaksi.TransaksiID,
+                JenisTransaksi: transaksi.JenisTransaksi,
+                Jumlah: transaksi.Jumlah,
+                Akun_bank: {
+                    AkunID: transaksi.Akun_bank.AkunID,
+                    Saldo: transaksi.Akun_bank.Saldo,
+                    Nasabah: {
+                        NasabahID: transaksi.Akun_bank.Nasabah.NasabahID,
+                        NamaNasabah: transaksi.Akun_bank.Nasabah.NamaNasabah
+                    }
+                }
+            }
         });
     } catch (error) {
         next(error);
@@ -112,6 +128,40 @@ const updateTransaksi = async (req, res, next) => {
         const { id } = req.params;
         const { JenisTransaksi, Jumlah } = req.body;
 
+        const transaksi = await prisma.transaksi.findUnique({
+            where: {
+                TransaksiID: parseInt(id)
+            },
+            include: {
+                Akun_bank: {
+                    include: {
+                        Nasabah: true
+                    }
+                }
+            }
+        });
+
+        if (!transaksi) {
+            return res.status(404).json({
+                status: false,
+                message: 'Transaksi tidak di temukan',
+                data: null
+            });
+        }
+
+        let newSaldo;
+
+        if (JenisTransaksi === 'withdraw') {
+            newSaldo = transaksi.Akun_bank.Saldo - Jumlah;
+        } else if (JenisTransaksi === 'deposit') {
+            newSaldo = transaksi.Akun_bank.Saldo + Jumlah;
+        } else {
+            return res.status(400).json({
+                status: false,
+                message: 'Invalid JenisTransaksi'
+            });
+        }
+
         const updatedTransaksi = await prisma.transaksi.update({
             where: {
                 TransaksiID: parseInt(id)
@@ -122,16 +172,24 @@ const updateTransaksi = async (req, res, next) => {
             }
         });
 
+        await prisma.akun_bank.update({
+            where: {
+                AkunID: transaksi.Akun_bank.AkunID
+            },
+            data: {
+                Saldo: newSaldo
+            }
+        });
+
         res.status(200).json({
             status: true,
-            message: 'Transaksi updated successfully',
+            message: 'Transaksi sukses di apdet',
             data: updatedTransaksi
         });
     } catch (error) {
         next(error);
     }
 };
-
 const deleteTransaksi = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -144,7 +202,7 @@ const deleteTransaksi = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: 'Transaksi deleted successfully',
+            message: 'Transaksi berhasil di hapus',
             data: null
         });
     } catch (error) {

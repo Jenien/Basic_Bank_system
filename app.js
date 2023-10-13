@@ -10,7 +10,7 @@ app.use('/api/v1', endpointV1);
 app.use((req, res, next) => {
     res.status(404).json({
         status: false,
-        message: 'Not Found',
+        message: 'tidak di temukan',
         data: null
     });
     next(); 

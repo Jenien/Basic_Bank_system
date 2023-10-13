@@ -11,7 +11,7 @@ const createNasabah = async (req, res, next) => {
         });
         res.status(200).json({
             status: true,
-            message: 'Nasabah created successfully',
+            message: 'Nasabah sukses di bikin',
             data: nasabah
         });
     } catch (error) {
@@ -25,13 +25,14 @@ const getNasabahList = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: 'Nasabah list found',
+            message: 'Nasabah di temukan',
             data: nasabahList
         });
     } catch (error) {
         next(error);
     }
 };
+
 
 const getNasabah = async (req, res, next) => {
     try {
@@ -45,15 +46,25 @@ const getNasabah = async (req, res, next) => {
         if (!nasabah) {
             return res.status(404).json({
                 status: false,
-                message: 'Nasabah not found',
+                message: 'Nasabah tidak di temukan',
                 data: null
             });
         }
 
+        const akunBank = await prisma.akun_bank.findFirst({
+            where: {
+                NasabahID: parseInt(id),
+            }
+        });
+
         res.status(200).json({
             status: true,
-            message: 'Nasabah detail found',
-            data: nasabah
+            message: 'Nasabah detail di temukan',
+            data: {
+                NasabahID: nasabah.NasabahID,
+                NamaNasabah: nasabah.NamaNasabah,
+                SaldoAwal: akunBank ? akunBank.Saldo : null
+            }
         });
     } catch (error) {
         next(error);
@@ -76,7 +87,7 @@ const updateNasabah = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: 'Nasabah updated successfully',
+            message: 'Nasabah sukses di apdet',
             data: updatedNasabah
         });
     } catch (error) {
@@ -98,7 +109,7 @@ const deleteNasabah = async (req, res, next) => {
         if (akunBankTerhubung) {
             return res.status(400).json({
                 status: false,
-                message: 'Cannot delete Nasabah with linked Akun Bank',
+                message: 'Tidak bisa haus nasabah, hapus dulu akun bank nya Akun Bank',
                 data: null
             });
         }
@@ -112,7 +123,7 @@ const deleteNasabah = async (req, res, next) => {
 
         res.status(200).json({
             status: true,
-            message: 'Nasabah deleted successfully',
+            message: 'Nasabah berhasil di hapus',
             data: null
         });
     } catch (error) {

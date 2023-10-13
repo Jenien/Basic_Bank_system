@@ -118,9 +118,19 @@ POST http://localhost:8001/api/v1/transaksi
 Content-Type: application/json
 
 {
-  "AkunID": 4,
+  "AkunID": 1,
   "JenisTransaksi": "withdraw",
-  "Jumlah": 3000
+  "Jumlah": 2000
+}
+
+#### Create Transaksi (POST)
+POST http://localhost:8001/api/v1/transaksi
+Content-Type: application/json
+
+{
+  "AkunID": 3,
+  "JenisTransaksi": "deposit",
+  "Jumlah": 2000
 }
 
 ### Create Transaksi (POST)
@@ -138,34 +148,42 @@ Content-Type: application/json
 ### Get Nasabah List 
 GET http://localhost:8001/api/v1/nasabah
 
-### Get Nasabah Detail ###
+### Get Nasabah Detail 
 GET  http://localhost:8001/api/v1/nasabah/1
 
 ### Get Akun Bank List 
 GET http://localhost:8001/api/v1/akun
 
-### Get Akun Bank Detail ###
-GET http://localhost:8001/api/v1/akun/1
+### Get Akun Bank Detail
+GET http://localhost:8001/api/v1/akun/3
 
-### Get Transaksi List ###
+### Get Transaksi List
 GET http://localhost:8001/api/v1/transaksi
 
-### Get Transaksi Detail ###
+### Get Transaksi Detail
 GET http://localhost:8001/api/v1/transaksi/1
 
 
 ############### UPDATED
 
-### Update Transaksi ###
+### Update Transaksi
 PUT http://localhost:8001/api/v1/transaksi/1
 Content-Type: application/json
 
 {
+    "JenisTransaksi": "deposit",
+    "Jumlah": 1000
+}
+### Update Transaksi
+PUT http://localhost:8001/api/v1/transaksi/3
+Content-Type: application/json
+
+{
     "JenisTransaksi": "withdraw",
-    "Jumlah": 200
+    "Jumlah": 4000
 }
 
-### Update Nasabah ###
+### Update Nasabah 
 PUT http://localhost:8001/api/v1/nasabah/1
 Content-Type: application/json
 
@@ -178,7 +196,7 @@ PUT http://localhost:8001/api/v1/akun/1
 Content-Type: application/json
 
 {
-    "Saldo": 1500
+    "Saldo": 50000
 }
 
 #################### DELETE
